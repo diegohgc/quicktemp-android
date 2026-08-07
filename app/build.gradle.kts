@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.temperatura"
+    namespace = "com.diegohg.quicktemp"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -11,17 +11,28 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.temperatura"
-        minSdk = 24
+        applicationId = "com.diegohg.quicktemp"
+        minSdk = 23
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 8
+        versionName = "1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("../quicktemp.jks")
+            storePassword = System.getenv("QUICKTEMP_STORE_PASS") ?: project.findProperty("QUICKTEMP_STORE_PASS") as String? ?: ""
+            keyAlias = "quicktemp"
+            keyPassword = System.getenv("QUICKTEMP_KEY_PASS") ?: project.findProperty("QUICKTEMP_KEY_PASS") as String? ?: ""
+        }
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             optimization {
                 enable = false
             }

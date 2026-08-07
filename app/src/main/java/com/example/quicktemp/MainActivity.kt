@@ -1,9 +1,11 @@
-package com.example.temperatura
+package com.diegohg.quicktemp
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
+import android.view.View
 import android.webkit.GeolocationPermissions
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
@@ -14,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.diegohg.quicktemp.R
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -37,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         adView = findViewById(R.id.adView)
         adView.loadAd(AdRequest.Builder().build())
 
-        val rootLayout = findViewById<android.view.View>(R.id.root)
+        val rootLayout = findViewById<View>(R.id.root)
         ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
@@ -78,6 +81,24 @@ class MainActivity : AppCompatActivity() {
 
         webView.setInitialScale(1)
         webView.loadUrl("https://diegohgc.github.io/temperatura/")
+
+        // Guardar última ubicación conocida para el widget
+        guardarUltimaUbicacion()
+    }
+
+    private fun guardarUltimaUbicacion() {
+        if (!hasLocationPermission()) return
+        try {
+            val lm = getSystemService(LOCATION_SERVICE) as LocationManager
+            val loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                ?: lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            if (loc != null) {
+                getSharedPreferences("widget_prefs", MODE_PRIVATE).edit()
+                    .putFloat("lat", loc.latitude.toFloat())
+                    .putFloat("lon", loc.longitude.toFloat())
+                    .apply()
+            }
+        } catch (e: Exception) {}
     }
 
     private fun hasLocationPermission(): Boolean {
