@@ -14,8 +14,8 @@ android {
         applicationId = "com.diegohg.quicktemp"
         minSdk = 23
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.8"
+        versionCode = 9
+        versionName = "1.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -34,8 +34,12 @@ android {
         release {
             signingConfig = signingConfigs.getByName("release")
             optimization {
-                enable = false
+                enable = true
             }
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
