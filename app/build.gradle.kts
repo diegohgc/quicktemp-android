@@ -14,8 +14,8 @@ android {
         applicationId = "com.diegohg.quicktemp"
         minSdk = 23
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.9"
+        versionCode = 10
+        versionName = "1.9.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
