@@ -113,7 +113,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.setInitialScale(1)
-        webView.loadUrl("https://diegohgc.github.io/temperatura/")
+        // "?apk=1" identifica que la web se esta cargando desde la app
+        // Android -- lo usa la propia web para activar cosas que solo
+        // tienen sentido viniendo de la app instalada (ej. el boton de
+        // valorar en Play Store), sin mostrarlas a visitantes normales
+        // de la web/PWA.
+        webView.loadUrl("https://diegohgc.github.io/temperatura/?apk=1")
 
         // Guardar última ubicación conocida para el widget
         guardarUltimaUbicacion()
