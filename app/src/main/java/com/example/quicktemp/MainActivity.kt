@@ -2,12 +2,16 @@ package com.diegohg.quicktemp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.webkit.GeolocationPermissions
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -59,7 +63,33 @@ class MainActivity : AppCompatActivity() {
         settings.textZoom = 100
         settings.setGeolocationEnabled(true)
 
-        webView.webViewClient = WebViewClient()
+        // El WebView por defecto no sabe abrir esquemas que no sean http/https
+        // (por ejemplo "intent://..." o "market://..."), que es justo lo que usa
+        // Play Store para redirigir a su propia app -- sin este override, cualquier
+        // enlace a la ficha de Play Store (como el botón "Valorar QuickTemp") daba
+        // net::ERR_UNKNOWN_URL_SCHEME en vez de abrir la Play Store nativa.
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                val url = request?.url?.toString() ?: return false
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    return false
+                }
+                return try {
+                    val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                    startActivity(intent)
+                    true
+                } catch (e: ActivityNotFoundException) {
+                    // La app de destino (ej. Play Store) no esta instalada:
+                    // no hacemos nada, evitamos que la webview se quede en blanco.
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+            }
+        }
         webView.webChromeClient = object : WebChromeClient() {
             override fun onGeolocationPermissionsShowPrompt(
                 origin: String?,
