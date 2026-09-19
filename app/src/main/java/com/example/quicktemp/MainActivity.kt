@@ -22,10 +22,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.diegohg.quicktemp.R
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
@@ -122,6 +126,7 @@ class MainActivity : AppCompatActivity() {
 
         // Guardar última ubicación conocida para el widget
         guardarUltimaUbicacion()
+        programarActualizacionPeriodicaWidget()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -133,6 +138,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    // Encola la actualización periódica del widget cada 15 min (el mínimo
+    // que permite WorkManager) -- KEEP para no crear una tarea duplicada
+    // cada vez que se abre la app, ya que WorkManager persiste la tarea
+    // entre reinicios del dispositivo sin necesidad de más código.
+    private fun programarActualizacionPeriodicaWidget() {
+        val request = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(15, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "widget_actualizacion_periodica",
+            ExistingPeriodicWorkPolicy.KEEP,
+            request
+        )
     }
 
     private fun guardarUltimaUbicacion() {

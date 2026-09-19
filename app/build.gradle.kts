@@ -14,8 +14,8 @@ android {
         applicationId = "com.diegohg.quicktemp"
         minSdk = 23
         targetSdk = 36
-        versionCode = 12
-        versionName = "1.9.3"
+        versionCode = 13
+        versionName = "1.10.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
     implementation(libs.play.services.ads)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
