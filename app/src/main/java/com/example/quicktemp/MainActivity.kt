@@ -193,12 +193,28 @@ class MainActivity : AppCompatActivity() {
             pendingGeolocationCallback?.invoke(pendingGeolocationOrigin, granted, false)
             pendingGeolocationCallback = null
             pendingGeolocationOrigin = null
+            if (granted) {
+                // En el arranque (linea ~135) el permiso todavia no existe la
+                // primera vez que se abre la app, asi que widget_prefs se
+                // queda vacio y los widgets muestran guiones indefinidamente
+                // hasta la siguiente apertura. Al conceder el permiso aqui ya
+                // se puede guardar la ubicacion -- con un pequeno retraso
+                // porque el fix de localizacion que acaba de disparar la
+                // propia WebView tarda un instante en llegar a
+                // LocationManager.getLastKnownLocation().
+                webView.postDelayed({ guardarUltimaUbicacion() }, 2000)
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
         adView.resume()
+        // Refresco barato en cada apertura de la app: si ya hay permiso y
+        // ubicacion disponible, mantiene widget_prefs al dia para que los
+        // widgets (que no piden permiso por su cuenta) tengan siempre algo
+        // reciente de donde partir.
+        guardarUltimaUbicacion()
     }
 
     override fun onPause() {
