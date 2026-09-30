@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.widget.RemoteViews
 import org.json.JSONObject
 import java.net.URL
@@ -39,6 +40,7 @@ class TemperaturaWidgetHoras : AppWidgetProvider() {
 
     companion object {
         const val ACTION_ACTUALIZAR = "com.diegohg.quicktemp.WIDGET_HORAS_ACTUALIZAR"
+        private const val CACHE_PREFS = "widget_horas_cache"
 
         private val IDS_HORA = intArrayOf(
             R.id.widgetHoras_hora0, R.id.widgetHoras_hora1, R.id.widgetHoras_hora2,
@@ -112,102 +114,142 @@ class TemperaturaWidgetHoras : AppWidgetProvider() {
             widgetId: Int,
             views: RemoteViews
         ) {
+            val cache = context.getSharedPreferences(CACHE_PREFS, Context.MODE_PRIVATE)
             val ubicacion = TemperaturaWidget.obtenerUbicacion(context)
             if (ubicacion == null) {
-                views.setTextViewText(R.id.widgetHoras_temp, "--°")
+                aplicarCacheOPlaceholder(views, cache)
                 appWidgetManager.updateAppWidget(widgetId, views)
                 return
             }
             val (lat, lon) = ubicacion
 
+            // Open-Meteo: una sola llamada trae actual + horas + max/min del
+            // dia, misma fuente que usa ya la app. Si falla (sin red en ese
+            // instante, Doze...) se conserva el ultimo dato bueno en cache en
+            // vez de vaciar el widget a "--°".
             try {
                 val json = JSONObject(
-                    URL("https://api.weatherapi.com/v1/forecast.json?key=1273625cfc2746fcaa760211260309&q=$lat,$lon&days=2&aqi=no&alerts=no").readText()
+                    URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&hourly=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=auto").readText()
                 )
                 val current = json.getJSONObject("current")
-                val tempActual = current.getDouble("temp_c")
-                val codigoActual = current.getJSONObject("condition").getInt("code")
+                val tempActual = current.getDouble("temperature_2m")
+                val codigoActual = current.getInt("weather_code")
                 val esDeDiaActual = current.getInt("is_day") == 1
-                val vientoKmh = current.getDouble("wind_kph").toInt()
+                val vientoKmh = current.getDouble("wind_speed_10m").toInt()
+                val humedad = current.getInt("relative_humidity_2m")
 
-                var omCloud: Int? = null
-                var omVis: Int? = null
-                try {
-                    val omJson = JSONObject(URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=cloud_cover,visibility").readText())
-                    val omCurrent = omJson.getJSONObject("current")
-                    omCloud = omCurrent.optInt("cloud_cover", -1).takeIf { it >= 0 }
-                    omVis = omCurrent.optDouble("visibility", -1.0).takeIf { it >= 0 }?.toInt()
-                } catch (e: Exception) {}
+                val tempTexto = "${tempActual.toInt()}°"
+                // Ya no se usa icono para el estado actual (solo se mantiene
+                // el icono por hora en la franja de previsión), a peticion
+                // del usuario -- se queda solo temperatura, ciudad, previsión
+                // por horas, humedad y viento.
 
-                views.setTextViewText(R.id.widgetHoras_temp, "${tempActual.toInt()}°")
-                views.setImageViewResource(
-                    R.id.widgetHoras_icono,
-                    TemperaturaWidget.iconoParaCodigo(codigoActual, esDeDiaActual, omCloud, omVis)
-                )
-
-                // Máx/mín del día de hoy (primer forecastday) y hora de esta actualización.
-                try {
-                    val dia0 = json.getJSONObject("forecast").getJSONArray("forecastday").getJSONObject(0).getJSONObject("day")
-                    val maxT = dia0.getDouble("maxtemp_c").toInt()
-                    val minT = dia0.getDouble("mintemp_c").toInt()
-                    views.setTextViewText(R.id.widgetHoras_maxmin, "Máx ${maxT}° Mín ${minT}°")
-                } catch (e: Exception) {}
+                val maxMinTexto = try {
+                    val daily = json.getJSONObject("daily")
+                    val maxT = daily.getJSONArray("temperature_2m_max").getDouble(0).toInt()
+                    val minT = daily.getJSONArray("temperature_2m_min").getDouble(0).toInt()
+                    "Máx ${maxT}° Mín ${minT}°"
+                } catch (e: Exception) { cache.getString("maxmin", "") ?: "" }
 
                 val horaFormateada = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-                views.setTextViewText(R.id.widgetHoras_horaActualizacion, horaFormateada)
 
                 // Todas las horas de hoy + mañana, quedarnos con las que
                 // aún no han pasado y coger las 6 siguientes.
-                val ahoraEpoch = System.currentTimeMillis() / 1000
-                val dias = json.getJSONObject("forecast").getJSONArray("forecastday")
-                val horasFuturas = mutableListOf<JSONObject>()
-                for (i in 0 until dias.length()) {
-                    val horas = dias.getJSONObject(i).getJSONArray("hour")
-                    for (h in 0 until horas.length()) {
-                        val hora = horas.getJSONObject(h)
-                        if (hora.getLong("time_epoch") >= ahoraEpoch) horasFuturas.add(hora)
-                    }
+                val hourly = json.getJSONObject("hourly")
+                val horasTime = hourly.getJSONArray("time")
+                val horasTemp = hourly.getJSONArray("temperature_2m")
+                val horasCodigo = hourly.getJSONArray("weather_code")
+                val horasEsDia = hourly.getJSONArray("is_day")
+                val ahoraMillis = System.currentTimeMillis()
+                val sdfHora = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
+
+                data class HoraFutura(val texto: String, val temp: Int, val icono: Int)
+                val futuras = mutableListOf<HoraFutura>()
+                for (i in 0 until horasTime.length()) {
+                    val tStr = horasTime.getString(i)
+                    val tMillis = try { sdfHora.parse(tStr)?.time ?: 0L } catch (e: Exception) { 0L }
+                    if (tMillis < ahoraMillis) continue
+                    val horaTexto = tStr.substringAfter("T").substringBefore(":")
+                    futuras.add(
+                        HoraFutura(
+                            "${horaTexto}h",
+                            horasTemp.getDouble(i).toInt(),
+                            TemperaturaWidget.iconoParaCodigo(horasCodigo.getInt(i), horasEsDia.getInt(i) == 1)
+                        )
+                    )
+                    if (futuras.size >= 6) break
                 }
 
-                // Probabilidad de lluvia: mismo criterio que la app (hora
-                // actual del pronóstico horario, WeatherAPI no la da en "current").
-                val probLluvia = horasFuturas.getOrNull(0)?.optInt("chance_of_rain", -1) ?: -1
-                views.setTextViewText(
-                    R.id.widgetHoras_lluviaViento,
-                    "💧 ${if (probLluvia >= 0) "$probLluvia%" else "--%"} 💨 ${vientoKmh} km/h"
-                )
+                val lluviaVientoTexto = "💧 ${humedad}% 💨 ${vientoKmh} km/h"
+
+                val ciudad = try {
+                    val cj = JSONObject(URL("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$lat&longitude=$lon&localityLanguage=es").readText())
+                    cj.optString("locality")
+                        .ifBlank { cj.optString("city") }
+                        .ifBlank { cj.optString("countryName") }
+                        .ifBlank { cache.getString("ciudad", "") ?: "" }
+                } catch (e: Exception) { cache.getString("ciudad", "") ?: "" }
+
+                // Guardar en cache antes de pintar, para que el proximo fallo
+                // pueda recuperar exactamente este mismo estado.
+                val cacheEdit = cache.edit()
+                cacheEdit.putString("temp", tempTexto)
+                cacheEdit.putString("maxmin", maxMinTexto)
+                cacheEdit.putString("lluviaViento", lluviaVientoTexto)
+                cacheEdit.putString("ciudad", ciudad)
+                cacheEdit.putInt("horasCount", futuras.size)
+                futuras.forEachIndexed { i, h ->
+                    cacheEdit.putString("hora$i", h.texto)
+                    cacheEdit.putString("temp$i", "${h.temp}°")
+                    cacheEdit.putInt("icono$i", h.icono)
+                }
+                cacheEdit.apply()
+
+                views.setTextViewText(R.id.widgetHoras_temp, tempTexto)
+                views.setTextViewText(R.id.widgetHoras_maxmin, maxMinTexto)
+                views.setTextViewText(R.id.widgetHoras_horaActualizacion, horaFormateada)
+                views.setTextViewText(R.id.widgetHoras_lluviaViento, lluviaVientoTexto)
+                if (ciudad.isNotBlank()) views.setTextViewText(R.id.widgetHoras_ciudad, ciudad)
 
                 for (i in 0 until 6) {
-                    if (i >= horasFuturas.size) {
+                    if (i >= futuras.size) {
                         views.setTextViewText(IDS_HORA[i], "")
                         views.setTextViewText(IDS_TEMP[i], "")
                         continue
                     }
-                    val hora = horasFuturas[i]
-                    val horaTexto = hora.getString("time").substringAfter(" ").substringBefore(":")
-                    val tempHora = hora.getDouble("temp_c")
-                    val codigoHora = hora.getJSONObject("condition").getInt("code")
-                    val esDeDiaHora = hora.getInt("is_day") == 1
-
-                    views.setTextViewText(IDS_HORA[i], "${horaTexto}h")
-                    views.setTextViewText(IDS_TEMP[i], "${tempHora.toInt()}°")
-                    views.setImageViewResource(
-                        IDS_ICONO[i],
-                        TemperaturaWidget.iconoParaCodigo(codigoHora, esDeDiaHora, null, null)
-                    )
+                    views.setTextViewText(IDS_HORA[i], futuras[i].texto)
+                    views.setTextViewText(IDS_TEMP[i], "${futuras[i].temp}°")
+                    views.setImageViewResource(IDS_ICONO[i], futuras[i].icono)
                 }
-            } catch (e: Exception) {}
-
-            val ciudad = try {
-                val json = JSONObject(URL("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$lat&longitude=$lon&localityLanguage=es").readText())
-                json.optString("locality")
-                    .ifBlank { json.optString("city") }
-                    .ifBlank { json.optString("countryName") }
-                    .ifBlank { "" }
-            } catch (e: Exception) { "" }
-            if (ciudad.isNotBlank()) views.setTextViewText(R.id.widgetHoras_ciudad, ciudad)
+            } catch (e: Exception) {
+                aplicarCacheOPlaceholder(views, cache)
+            }
 
             appWidgetManager.updateAppWidget(widgetId, views)
+        }
+
+        // Rellena el widget con el ultimo dato bueno guardado; si nunca hubo
+        // ninguno (primera vez, sin red desde la instalacion), deja el
+        // placeholder por defecto del layout ("--°" ya viene en el XML).
+        private fun aplicarCacheOPlaceholder(views: RemoteViews, cache: SharedPreferences) {
+            val tempCache = cache.getString("temp", null) ?: return
+            views.setTextViewText(R.id.widgetHoras_temp, tempCache)
+            views.setTextViewText(R.id.widgetHoras_maxmin, cache.getString("maxmin", ""))
+            views.setTextViewText(R.id.widgetHoras_lluviaViento, cache.getString("lluviaViento", ""))
+            val ciudadCache = cache.getString("ciudad", "")
+            if (!ciudadCache.isNullOrBlank()) views.setTextViewText(R.id.widgetHoras_ciudad, ciudadCache)
+
+            val count = cache.getInt("horasCount", 0)
+            for (i in 0 until 6) {
+                if (i >= count) {
+                    views.setTextViewText(IDS_HORA[i], "")
+                    views.setTextViewText(IDS_TEMP[i], "")
+                    continue
+                }
+                views.setTextViewText(IDS_HORA[i], cache.getString("hora$i", ""))
+                views.setTextViewText(IDS_TEMP[i], cache.getString("temp$i", ""))
+                views.setImageViewResource(IDS_ICONO[i], cache.getInt("icono$i", R.drawable.ic_w_cloudy))
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ class TemperaturaWidget : AppWidgetProvider() {
 
     companion object {
         const val ACTION_ACTUALIZAR = "com.diegohg.quicktemp.WIDGET_ACTUALIZAR"
+        private const val CACHE_PREFS = "widget_cache"
 
         // Construye el RemoteViews base con los PendingIntent de clic ya
         // enganchados -- hace falta rehacer esto en cada actualización
@@ -54,7 +55,6 @@ class TemperaturaWidget : AppWidgetProvider() {
             )
             views.setOnClickPendingIntent(R.id.widget_root, abrirAppPending)
             views.setOnClickPendingIntent(R.id.widget_temp, abrirAppPending)
-            views.setOnClickPendingIntent(R.id.widget_icono, abrirAppPending)
             views.setOnClickPendingIntent(R.id.widget_ciudad, abrirAppPending)
 
             val refreshIntent = Intent(context, TemperaturaWidget::class.java).apply {
@@ -92,58 +92,66 @@ class TemperaturaWidget : AppWidgetProvider() {
             widgetId: Int,
             views: RemoteViews
         ) {
+            val cache = context.getSharedPreferences(CACHE_PREFS, Context.MODE_PRIVATE)
+
             val ubicacion = obtenerUbicacion(context)
             if (ubicacion == null) {
-                views.setTextViewText(R.id.widget_temp, "--°C")
-                views.setImageViewResource(R.id.widget_icono, R.drawable.ic_w_cloudy)
-                views.setTextViewText(R.id.widget_ciudad, "Abre la app primero")
+                // Sin ubicación ninguna vez: no hay nada que mostrar todavía.
+                // Si ya hubo una actualización buena antes, se queda con ella
+                // en vez de vaciar el widget.
+                aplicarCacheOPlaceholder(views, cache)
                 appWidgetManager.updateAppWidget(widgetId, views)
                 return
             }
             val (lat, lon) = ubicacion
 
-            // Misma fuente que usa la app (WeatherAPI) para que la temperatura
-            // del widget coincida con la que ve el usuario al abrir QuickTemp
-            // -- antes usaba Open-Meteo con el modelo por defecto, que no es
-            // el mismo dato ni la misma fuente que la app, y podían discrepar
-            // varios grados entre uno y otro.
-            var tempTexto = "--°C"
-            var iconoRes = R.drawable.ic_w_cloudy
+            // Open-Meteo: misma fuente que usa ya la app para la previsión
+            // (temperatura, icono, viento). Si esta actualización falla por
+            // lo que sea (sin red en ese instante, Doze, DNS...), NO se
+            // sobrescribe con "--°C" -- se conserva el ultimo dato bueno
+            // guardado en cache, para que el widget no se quede "en blanco"
+            // cada vez que una actualizacion puntual en segundo plano falla.
             try {
-                val json = JSONObject(URL("https://api.weatherapi.com/v1/current.json?key=1273625cfc2746fcaa760211260309&q=$lat,$lon").readText())
+                val json = JSONObject(
+                    URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m&timezone=auto").readText()
+                )
                 val current = json.getJSONObject("current")
-                val temp = current.getDouble("temp_c")
-                tempTexto = "${temp.toInt()}°C"
-                val codigo = current.getJSONObject("condition").getInt("code")
-                val esDeDia = current.getInt("is_day") == 1
+                val temp = current.getDouble("temperature_2m")
+                val tempTexto = "${temp.toInt()}°C"
 
-                // Corrección con nubosidad/visibilidad real (Open-Meteo), igual
-                // que hace la web -- WeatherAPI a veces dice "nublado"/"niebla"
-                // con el cielo despejado de verdad.
-                var omCloud: Int? = null
-                var omVis: Int? = null
-                try {
-                    val omJson = JSONObject(URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=cloud_cover,visibility").readText())
-                    val omCurrent = omJson.getJSONObject("current")
-                    omCloud = omCurrent.optInt("cloud_cover", -1).takeIf { it >= 0 }
-                    omVis = omCurrent.optDouble("visibility", -1.0).takeIf { it >= 0 }?.toInt()
-                } catch (e: Exception) {}
+                val ciudad = try {
+                    val cj = JSONObject(URL("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$lat&longitude=$lon&localityLanguage=es").readText())
+                    cj.optString("locality")
+                        .ifBlank { cj.optString("city") }
+                        .ifBlank { cj.optString("countryName") }
+                        .ifBlank { cache.getString("ciudad", "") ?: "" }
+                } catch (e: Exception) { cache.getString("ciudad", "") ?: "" }
 
-                iconoRes = iconoParaCodigo(codigo, esDeDia, omCloud, omVis)
-            } catch (e: Exception) {}
+                cache.edit()
+                    .putString("temp", tempTexto)
+                    .putString("ciudad", ciudad)
+                    .apply()
 
-            val ciudad = try {
-                val json = JSONObject(URL("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$lat&longitude=$lon&localityLanguage=es").readText())
-                json.optString("locality")
-                    .ifBlank { json.optString("city") }
-                    .ifBlank { json.optString("countryName") }
-                    .ifBlank { "" }
-            } catch (e: Exception) { "" }
-
-            views.setTextViewText(R.id.widget_temp, tempTexto)
-            views.setImageViewResource(R.id.widget_icono, iconoRes)
-            views.setTextViewText(R.id.widget_ciudad, ciudad)
+                views.setTextViewText(R.id.widget_temp, tempTexto)
+                views.setTextViewText(R.id.widget_ciudad, ciudad)
+            } catch (e: Exception) {
+                aplicarCacheOPlaceholder(views, cache)
+            }
             appWidgetManager.updateAppWidget(widgetId, views)
+        }
+
+        // Rellena el widget con el ultimo dato bueno guardado; si nunca hubo
+        // ninguno (primera vez, sin red desde la instalacion), usa el
+        // placeholder de siempre.
+        private fun aplicarCacheOPlaceholder(views: RemoteViews, cache: android.content.SharedPreferences) {
+            val tempCache = cache.getString("temp", null)
+            if (tempCache != null) {
+                views.setTextViewText(R.id.widget_temp, tempCache)
+                views.setTextViewText(R.id.widget_ciudad, cache.getString("ciudad", ""))
+            } else {
+                views.setTextViewText(R.id.widget_temp, "--°C")
+                views.setTextViewText(R.id.widget_ciudad, "Abre la app primero")
+            }
         }
 
         // Resuelve lat/lon para los widgets: permiso + última ubicación
@@ -178,53 +186,20 @@ class TemperaturaWidget : AppWidgetProvider() {
             return Pair(savedLat.toDouble(), savedLon.toDouble())
         }
 
-        // Traduce el código de condición de WeatherAPI a un drawable del
-        // widget, corrigiendo con la nubosidad/visibilidad real de
-        // Open-Meteo (mismo criterio anti-optimismo/anti-pesimismo que usa
-        // la web en renderDatos(), simplificado a 4 categorías: despejado,
-        // mayormente despejado, parcial, nublado).
+        // Traduce el codigo de condicion WMO de Open-Meteo a un drawable del
+        // widget -- ya no hace falta ninguna tabla de traduccion ni cruce con
+        // una segunda fuente (Open-Meteo ya es la unica fuente, y su codigo
+        // ya viene en la escala WMO estandar que usa toda la app).
         // No privada: la reutiliza también TemperaturaWidgetHoras.
-        fun iconoParaCodigo(codigo: Int, esDeDia: Boolean, omCloud: Int?, omVis: Int?): Int {
-            // Lluvia / nieve / tormenta: no dependen de la nubosidad, van directos.
-            if (codigo in intArrayOf(1063, 1150, 1153, 1168, 1171, 1180, 1183, 1186, 1189,
-                    1192, 1195, 1198, 1201, 1204, 1207, 1240, 1243, 1246, 1249, 1252)) {
-                return R.drawable.ic_w_rain
-            }
-            if (codigo in intArrayOf(1066, 1069, 1072, 1114, 1117, 1210, 1213, 1216, 1219,
-                    1222, 1225, 1237, 1255, 1258, 1261, 1264)) {
-                return R.drawable.ic_w_snow
-            }
-            if (codigo in intArrayOf(1087, 1273, 1276, 1279, 1282)) {
-                return R.drawable.ic_w_storm
-            }
-
-            // Niebla/bruma: solo se confirma con visibilidad real baja (<2 km);
-            // si no, se trata como una condición de nubosidad normal.
-            var categoria = when (codigo) {
-                1000 -> 0 // despejado
-                1003 -> 1 // mayormente despejado
-                1006 -> 2 // parcial
-                1009 -> 3 // nublado
-                1030, 1135, 1147 -> {
-                    if (omVis != null && omVis < 2000) return R.drawable.ic_w_fog
-                    2
-                }
-                else -> 2
-            }
-
-            if (categoria <= 2 && omCloud != null) {
-                if (omCloud >= 80) categoria = 3
-                else if (omCloud >= 50) categoria = maxOf(categoria, 2)
-            }
-            if (codigo == 1009 && omCloud != null) {
-                if (omCloud < 20) categoria = 0
-                else if (omCloud < 50) categoria = 1
-                else if (omCloud < 80) categoria = minOf(categoria, 2)
-            }
-
-            return when (categoria) {
-                0, 1 -> if (esDeDia) R.drawable.ic_w_sun else R.drawable.ic_w_moon
-                2 -> if (esDeDia) R.drawable.ic_w_partly_cloudy else R.drawable.ic_w_partly_cloudy_night
+        fun iconoParaCodigo(codigo: Int, esDeDia: Boolean): Int {
+            return when {
+                codigo == 0 || codigo == 1 -> if (esDeDia) R.drawable.ic_w_sun else R.drawable.ic_w_moon
+                codigo == 2 -> if (esDeDia) R.drawable.ic_w_partly_cloudy else R.drawable.ic_w_partly_cloudy_night
+                codigo == 3 -> R.drawable.ic_w_cloudy
+                codigo == 45 || codigo == 48 -> R.drawable.ic_w_fog
+                codigo in 51..67 || codigo in 80..82 -> R.drawable.ic_w_rain
+                codigo in 71..77 || codigo in 85..86 -> R.drawable.ic_w_snow
+                codigo >= 95 -> R.drawable.ic_w_storm
                 else -> R.drawable.ic_w_cloudy
             }
         }

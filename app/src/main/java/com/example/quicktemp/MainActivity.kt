@@ -104,11 +104,18 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     pendingGeolocationOrigin = origin
                     pendingGeolocationCallback = callback
+                    // Solo se pide el permiso fino. Pedir fino + aproximado a la vez
+                    // en un unico array hacia que Android (en varios fabricantes:
+                    // Samsung y Vivo confirmados) encadenara un SEGUNDO dialogo
+                    // preguntando especificamente por la ubicacion precisa cuando
+                    // la primera respuesta solo concedia la aproximada -- dos
+                    // dialogos seguidos pidiendo lo mismo. El permiso fino ya da
+                    // acceso tanto al proveedor GPS como al de red, no se pierde
+                    // nada quitando el aproximado de esta peticion.
                     ActivityCompat.requestPermissions(
                         this@MainActivity,
                         arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
+                            Manifest.permission.ACCESS_FINE_LOCATION
                         ),
                         locationPermissionRequestCode
                     )
