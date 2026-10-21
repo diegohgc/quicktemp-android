@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="w_cargando">Wird geladen…</string>
+    <string name="w_subiendo">Steigend</string>
+    <string name="w_bajando">Fallend</string>
+    <string name="w_pleamar">Hochwasser</string>
+    <string name="w_bajamar">Niedrigwasser</string>
+    <string name="w_en">in %1$s</string>
+    <string name="w_pleamar_lbl">▲ Hochwasser</string>
+    <string name="w_bajamar_lbl">▼ Niedrigwasser</string>
+    <string name="w_coef">Koeffizient</string>
+    <string name="w_vivas">Springtide</string>
+    <string name="w_muertas">Nipptide</string>
+    <string name="w_sin_mareas">Keine Gezeitendaten für diesen Ort</string>
+    <string name="w_lloviendo">Es regnet gerade</string>
+    <string name="w_hasta">bis %1$s Uhr</string>
+    <string name="w_durante">in den nächsten %1$d Std.</string>
+    <string name="w_sin_lluvia">Kein Regen</string>
+    <string name="w_proximas">in den nächsten %1$d Std.</string>
+    <string name="w_lluvia_a">Regen um %1$s Uhr</string>
+    <string name="w_empieza_en">Beginnt in %1$s</string>
+    <string name="w_total_horas">%1$d h: %2$s mm</string>
+    <string name="w_quedan_luz">Noch %1$s Tageslicht</string>
+    <string name="w_falta_amanecer">Noch %1$s bis Sonnenaufgang</string>
+    <string name="w_fase_0">Neumond</string>
+    <string name="w_fase_1">Zunehmende Sichel</string>
+    <string name="w_fase_2">Erstes Viertel</string>
+    <string name="w_fase_3">Zunehmender Mond</string>
+    <string name="w_fase_4">Vollmond</string>
+    <string name="w_fase_5">Abnehmender Mond</string>
+    <string name="w_fase_6">Letztes Viertel</string>
+    <string name="w_fase_7">Abnehmende Sichel</string>
+    <string name="w_ilum">%1$d%% beleuchtet</string>
+    <string name="w_llena_en">Vollmond in %1$d T.</string>
+    <string name="w_nueva_en">Neumond in %1$d T.</string>
+    <string name="w_nombre_mareas">QuickTemp · Gezeiten</string>
+    <string name="w_nombre_lluvia">QuickTemp · Regen</string>
+    <string name="w_nombre_sol">QuickTemp · Sonne &amp; Mond</string>
+    <string name="w_desc_mareas">Nächstes Hoch- und Niedrigwasser, Gezeitenkurve und Koeffizient</string>
+    <string name="w_desc_lluvia">Regnet es? Die nächsten 12 Stunden auf einen Blick</string>
+    <string name="w_desc_sol">Verbleibendes Tageslicht, Sonnenauf- und -untergang, Mondphase</string>
+</resources>

@@ -57,6 +57,48 @@
                 android:resource="@xml/widget_horas_info" />
         </receiver>
 
+        <receiver
+            android:name="com.diegohg.quicktemp.TemperaturaWidgetMareas"
+            android:label="@string/w_nombre_mareas"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.diegohg.quicktemp.WIDGET_MAREAS_ACTUALIZAR" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_mareas_info" />
+        </receiver>
+
+        <receiver
+            android:name="com.diegohg.quicktemp.TemperaturaWidgetLluvia"
+            android:label="@string/w_nombre_lluvia"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.diegohg.quicktemp.WIDGET_LLUVIA_ACTUALIZAR" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_lluvia_info" />
+        </receiver>
+
+        <receiver
+            android:name="com.diegohg.quicktemp.TemperaturaWidgetSolLuna"
+            android:label="@string/w_nombre_sol"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.diegohg.quicktemp.WIDGET_SOLLUNA_ACTUALIZAR" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_sol_luna_info" />
+        </receiver>
+
+        <receiver
+            android:name="com.diegohg.quicktemp.WidgetTickReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

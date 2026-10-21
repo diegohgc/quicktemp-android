@@ -24,9 +24,14 @@ import kotlin.concurrent.thread
 class TemperaturaWidgetHoras : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        WidgetProgramador.asegurar(context)
         for (id in appWidgetIds) {
             actualizarWidgetHoras(context, appWidgetManager, id)
         }
+    }
+
+    override fun onEnabled(context: Context) {
+        WidgetProgramador.asegurar(context)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -129,7 +134,7 @@ class TemperaturaWidgetHoras : AppWidgetProvider() {
             // vez de vaciar el widget a "--°".
             try {
                 val json = JSONObject(
-                    URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&hourly=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=auto").readText()
+                    URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&hourly=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=auto&models=icon_seamless").readText()
                 )
                 val current = json.getJSONObject("current")
                 val tempActual = current.getDouble("temperature_2m")

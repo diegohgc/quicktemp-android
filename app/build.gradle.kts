@@ -14,8 +14,8 @@ android {
         applicationId = "com.diegohg.quicktemp"
         minSdk = 23
         targetSdk = 36
-        versionCode = 14
-        versionName = "1.10.1"
+        versionCode = 15
+        versionName = "1.10.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -31,6 +31,12 @@ android {
     }
 
     buildTypes {
+        // Variante de pruebas: se instala AL LADO de la app de Play Store (otro
+        // identificador y nombre "QuickTemp Dev"), sin pisarla ni borrar sus datos.
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-dev"
+        }
         release {
             signingConfig = signingConfigs.getByName("release")
             optimization {

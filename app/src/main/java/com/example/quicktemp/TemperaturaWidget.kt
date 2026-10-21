@@ -21,9 +21,14 @@ import kotlin.concurrent.thread
 class TemperaturaWidget : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        WidgetProgramador.asegurar(context)
         for (id in appWidgetIds) {
             actualizarWidget(context, appWidgetManager, id)
         }
+    }
+
+    override fun onEnabled(context: Context) {
+        WidgetProgramador.asegurar(context)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -113,7 +118,7 @@ class TemperaturaWidget : AppWidgetProvider() {
             // cada vez que una actualizacion puntual en segundo plano falla.
             try {
                 val json = JSONObject(
-                    URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m&timezone=auto").readText()
+                    URL("https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m&timezone=auto&models=icon_seamless").readText()
                 )
                 val current = json.getJSONObject("current")
                 val temp = current.getDouble("temperature_2m")

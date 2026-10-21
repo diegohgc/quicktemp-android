@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="w_cargando">Kargatzen…</string>
+    <string name="w_subiendo">Gora egiten</string>
+    <string name="w_bajando">Behera egiten</string>
+    <string name="w_pleamar">Itsasgora</string>
+    <string name="w_bajamar">Itsasbehera</string>
+    <string name="w_en">%1$s barru</string>
+    <string name="w_pleamar_lbl">▲ Itsasgora</string>
+    <string name="w_bajamar_lbl">▼ Itsasbehera</string>
+    <string name="w_coef">Koefizientea</string>
+    <string name="w_vivas">Marea bizia</string>
+    <string name="w_muertas">Marea hila</string>
+    <string name="w_sin_mareas">Ez dago marea daturik kokaleku honetarako</string>
+    <string name="w_lloviendo">Euria ari du orain</string>
+    <string name="w_hasta">%1$s arte</string>
+    <string name="w_durante">hurrengo %1$d orduetan</string>
+    <string name="w_sin_lluvia">Eurik ez</string>
+    <string name="w_proximas">hurrengo %1$d orduetan</string>
+    <string name="w_lluvia_a">Euria %1$s(e)tan</string>
+    <string name="w_empieza_en">%1$s barru hasiko da</string>
+    <string name="w_total_horas">%1$d h: %2$s mm</string>
+    <string name="w_quedan_luz">%1$s argi geratzen dira</string>
+    <string name="w_falta_amanecer">%1$s falta dira egunsentira arte</string>
+    <string name="w_fase_0">Ilberria</string>
+    <string name="w_fase_1">Ilargi hazten</string>
+    <string name="w_fase_2">Lehen laurdena</string>
+    <string name="w_fase_3">Ilargi konbexu hazten</string>
+    <string name="w_fase_4">Ilargi betea</string>
+    <string name="w_fase_5">Ilargi konbexu txikitzen</string>
+    <string name="w_fase_6">Azken laurdena</string>
+    <string name="w_fase_7">Ilargi txikitzen</string>
+    <string name="w_ilum">%1$d%% argiztatua</string>
+    <string name="w_llena_en">Ilargi betea %1$d egun barru</string>
+    <string name="w_nueva_en">Ilberria %1$d egun barru</string>
+    <string name="w_nombre_mareas">QuickTemp · Mareak</string>
+    <string name="w_nombre_lluvia">QuickTemp · Euria</string>
+    <string name="w_nombre_sol">QuickTemp · Eguzkia eta ilargia</string>
+    <string name="w_desc_mareas">Hurrengo itsasgora eta itsasbehera, mareen kurba eta koefizientea</string>
+    <string name="w_desc_lluvia">Euria egingo du? Hurrengo 12 orduetako euria begirada batean</string>
+    <string name="w_desc_sol">Geratzen den argia, egunsentia, ilunabarra eta ilargiaren fasea</string>
+</resources>

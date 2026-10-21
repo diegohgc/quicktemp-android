@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="w_cargando">Cargando…</string>
+    <string name="w_subiendo">Subiendo</string>
+    <string name="w_bajando">Bajando</string>
+    <string name="w_pleamar">Pleamar</string>
+    <string name="w_bajamar">Bajamar</string>
+    <string name="w_en">en %1$s</string>
+    <string name="w_pleamar_lbl">▲ Pleamar</string>
+    <string name="w_bajamar_lbl">▼ Bajamar</string>
+    <string name="w_coef">Coeficiente</string>
+    <string name="w_vivas">Mareas vivas</string>
+    <string name="w_muertas">Mareas muertas</string>
+    <string name="w_sin_mareas">Sin datos de mareas en esta ubicación</string>
+    <string name="w_lloviendo">Lloviendo ahora</string>
+    <string name="w_hasta">hasta las %1$s</string>
+    <string name="w_durante">durante las próximas %1$d h</string>
+    <string name="w_sin_lluvia">Sin lluvia</string>
+    <string name="w_proximas">en las próximas %1$d h</string>
+    <string name="w_lluvia_a">Lluvia a las %1$s</string>
+    <string name="w_empieza_en">Empieza en %1$s</string>
+    <string name="w_total_horas">%1$d h: %2$s mm</string>
+    <string name="w_quedan_luz">Quedan %1$s de luz</string>
+    <string name="w_falta_amanecer">Faltan %1$s para amanecer</string>
+    <string name="w_fase_0">Luna nueva</string>
+    <string name="w_fase_1">Luna creciente</string>
+    <string name="w_fase_2">Cuarto creciente</string>
+    <string name="w_fase_3">Gibosa creciente</string>
+    <string name="w_fase_4">Luna llena</string>
+    <string name="w_fase_5">Gibosa menguante</string>
+    <string name="w_fase_6">Cuarto menguante</string>
+    <string name="w_fase_7">Luna menguante</string>
+    <string name="w_ilum">%1$d%% iluminada</string>
+    <string name="w_llena_en">Luna llena en %1$d d</string>
+    <string name="w_nueva_en">Luna nueva en %1$d d</string>
+    <string name="w_nombre_mareas">QuickTemp · Mareas</string>
+    <string name="w_nombre_lluvia">QuickTemp · Lluvia</string>
+    <string name="w_nombre_sol">QuickTemp · Sol y luna</string>
+    <string name="w_desc_mareas">Próxima pleamar y bajamar, curva de la marea y coeficiente</string>
+    <string name="w_desc_lluvia">¿Va a llover? Las próximas 12 horas de lluvia de un vistazo</string>
+    <string name="w_desc_sol">Luz que queda, amanecer, atardecer y fase de la luna</string>
+</resources>

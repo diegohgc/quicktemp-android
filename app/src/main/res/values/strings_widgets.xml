@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="w_cargando">Loading…</string>
+    <string name="w_subiendo">Rising</string>
+    <string name="w_bajando">Falling</string>
+    <string name="w_pleamar">High tide</string>
+    <string name="w_bajamar">Low tide</string>
+    <string name="w_en">in %1$s</string>
+    <string name="w_pleamar_lbl">▲ High tide</string>
+    <string name="w_bajamar_lbl">▼ Low tide</string>
+    <string name="w_coef">Coefficient</string>
+    <string name="w_vivas">Spring tide</string>
+    <string name="w_muertas">Neap tide</string>
+    <string name="w_sin_mareas">No tide data for this location</string>
+    <string name="w_lloviendo">Raining now</string>
+    <string name="w_hasta">until %1$s</string>
+    <string name="w_durante">for the next %1$d h</string>
+    <string name="w_sin_lluvia">No rain</string>
+    <string name="w_proximas">in the next %1$d h</string>
+    <string name="w_lluvia_a">Rain at %1$s</string>
+    <string name="w_empieza_en">Starts in %1$s</string>
+    <string name="w_total_horas">%1$d h: %2$s mm</string>
+    <string name="w_quedan_luz">%1$s of daylight left</string>
+    <string name="w_falta_amanecer">%1$s until sunrise</string>
+    <string name="w_fase_0">New moon</string>
+    <string name="w_fase_1">Waxing crescent</string>
+    <string name="w_fase_2">First quarter</string>
+    <string name="w_fase_3">Waxing gibbous</string>
+    <string name="w_fase_4">Full moon</string>
+    <string name="w_fase_5">Waning gibbous</string>
+    <string name="w_fase_6">Last quarter</string>
+    <string name="w_fase_7">Waning crescent</string>
+    <string name="w_ilum">%1$d%% lit</string>
+    <string name="w_llena_en">Full moon in %1$d d</string>
+    <string name="w_nueva_en">New moon in %1$d d</string>
+    <string name="w_nombre_mareas">QuickTemp · Tides</string>
+    <string name="w_nombre_lluvia">QuickTemp · Rain</string>
+    <string name="w_nombre_sol">QuickTemp · Sun &amp; moon</string>
+    <string name="w_desc_mareas">Next high and low tide, tide curve and coefficient</string>
+    <string name="w_desc_lluvia">Will it rain? Next 12 hours of rain at a glance</string>
+    <string name="w_desc_sol">Daylight left, sunrise, sunset and moon phase</string>
+</resources>

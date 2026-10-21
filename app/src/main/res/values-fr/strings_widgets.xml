@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="w_cargando">Chargement…</string>
+    <string name="w_subiendo">Montante</string>
+    <string name="w_bajando">Descendante</string>
+    <string name="w_pleamar">Pleine mer</string>
+    <string name="w_bajamar">Basse mer</string>
+    <string name="w_en">dans %1$s</string>
+    <string name="w_pleamar_lbl">▲ Pleine mer</string>
+    <string name="w_bajamar_lbl">▼ Basse mer</string>
+    <string name="w_coef">Coefficient</string>
+    <string name="w_vivas">Vives-eaux</string>
+    <string name="w_muertas">Mortes-eaux</string>
+    <string name="w_sin_mareas">Pas de données de marée ici</string>
+    <string name="w_lloviendo">Il pleut en ce moment</string>
+    <string name="w_hasta">jusqu\'à %1$s</string>
+    <string name="w_durante">pendant les %1$d prochaines h</string>
+    <string name="w_sin_lluvia">Pas de pluie</string>
+    <string name="w_proximas">dans les %1$d prochaines h</string>
+    <string name="w_lluvia_a">Pluie à %1$s</string>
+    <string name="w_empieza_en">Commence dans %1$s</string>
+    <string name="w_total_horas">%1$d h: %2$s mm</string>
+    <string name="w_quedan_luz">Encore %1$s de jour</string>
+    <string name="w_falta_amanecer">%1$s avant le lever du soleil</string>
+    <string name="w_fase_0">Nouvelle lune</string>
+    <string name="w_fase_1">Premier croissant</string>
+    <string name="w_fase_2">Premier quartier</string>
+    <string name="w_fase_3">Gibbeuse croissante</string>
+    <string name="w_fase_4">Pleine lune</string>
+    <string name="w_fase_5">Gibbeuse décroissante</string>
+    <string name="w_fase_6">Dernier quartier</string>
+    <string name="w_fase_7">Dernier croissant</string>
+    <string name="w_ilum">%1$d%% éclairée</string>
+    <string name="w_llena_en">Pleine lune dans %1$d j</string>
+    <string name="w_nueva_en">Nouvelle lune dans %1$d j</string>
+    <string name="w_nombre_mareas">QuickTemp · Marées</string>
+    <string name="w_nombre_lluvia">QuickTemp · Pluie</string>
+    <string name="w_nombre_sol">QuickTemp · Soleil et lune</string>
+    <string name="w_desc_mareas">Prochaines pleine et basse mer, courbe de marée et coefficient</string>
+    <string name="w_desc_lluvia">Va-t-il pleuvoir ? Les 12 prochaines heures de pluie en un coup d\'œil</string>
+    <string name="w_desc_sol">Lumière restante, lever, coucher et phase de la lune</string>
+</resources>

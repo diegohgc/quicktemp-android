@@ -152,12 +152,7 @@ class MainActivity : AppCompatActivity() {
     // cada vez que se abre la app, ya que WorkManager persiste la tarea
     // entre reinicios del dispositivo sin necesidad de más código.
     private fun programarActualizacionPeriodicaWidget() {
-        val request = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(15, TimeUnit.MINUTES).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "widget_actualizacion_periodica",
-            ExistingPeriodicWorkPolicy.KEEP,
-            request
-        )
+        WidgetProgramador.asegurar(this)
     }
 
     private fun guardarUltimaUbicacion() {

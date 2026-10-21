@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="w_cargando">Carregant…</string>
+    <string name="w_subiendo">Pujant</string>
+    <string name="w_bajando">Baixant</string>
+    <string name="w_pleamar">Pleamar</string>
+    <string name="w_bajamar">Baixamar</string>
+    <string name="w_en">d\'aquí a %1$s</string>
+    <string name="w_pleamar_lbl">▲ Pleamar</string>
+    <string name="w_bajamar_lbl">▼ Baixamar</string>
+    <string name="w_coef">Coeficient</string>
+    <string name="w_vivas">Marees vives</string>
+    <string name="w_muertas">Marees mortes</string>
+    <string name="w_sin_mareas">Sense dades de marees en aquesta ubicació</string>
+    <string name="w_lloviendo">Plou ara</string>
+    <string name="w_hasta">fins a les %1$s</string>
+    <string name="w_durante">durant les properes %1$d h</string>
+    <string name="w_sin_lluvia">Sense pluja</string>
+    <string name="w_proximas">en les properes %1$d h</string>
+    <string name="w_lluvia_a">Pluja a les %1$s</string>
+    <string name="w_empieza_en">Comença d\'aquí a %1$s</string>
+    <string name="w_total_horas">%1$d h: %2$s mm</string>
+    <string name="w_quedan_luz">Queden %1$s de llum</string>
+    <string name="w_falta_amanecer">Falten %1$s per a l\'alba</string>
+    <string name="w_fase_0">Lluna nova</string>
+    <string name="w_fase_1">Lluna creixent</string>
+    <string name="w_fase_2">Quart creixent</string>
+    <string name="w_fase_3">Gibosa creixent</string>
+    <string name="w_fase_4">Lluna plena</string>
+    <string name="w_fase_5">Gibosa minvant</string>
+    <string name="w_fase_6">Quart minvant</string>
+    <string name="w_fase_7">Lluna minvant</string>
+    <string name="w_ilum">%1$d%% il·luminada</string>
+    <string name="w_llena_en">Lluna plena d\'aquí a %1$d d</string>
+    <string name="w_nueva_en">Lluna nova d\'aquí a %1$d d</string>
+    <string name="w_nombre_mareas">QuickTemp · Marees</string>
+    <string name="w_nombre_lluvia">QuickTemp · Pluja</string>
+    <string name="w_nombre_sol">QuickTemp · Sol i lluna</string>
+    <string name="w_desc_mareas">Pròxima pleamar i baixamar, corba de la marea i coeficient</string>
+    <string name="w_desc_lluvia">Plourà? Les properes 12 hores de pluja d\'un cop d\'ull</string>
+    <string name="w_desc_sol">Llum que queda, alba, posta i fase de la lluna</string>
+</resources>

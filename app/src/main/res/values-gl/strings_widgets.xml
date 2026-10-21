@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="w_cargando">Cargando…</string>
+    <string name="w_subiendo">Subindo</string>
+    <string name="w_bajando">Baixando</string>
+    <string name="w_pleamar">Preamar</string>
+    <string name="w_bajamar">Baixamar</string>
+    <string name="w_en">en %1$s</string>
+    <string name="w_pleamar_lbl">▲ Preamar</string>
+    <string name="w_bajamar_lbl">▼ Baixamar</string>
+    <string name="w_coef">Coeficiente</string>
+    <string name="w_vivas">Mareas vivas</string>
+    <string name="w_muertas">Mareas mortas</string>
+    <string name="w_sin_mareas">Sen datos de mareas nesta ubicación</string>
+    <string name="w_lloviendo">Chovendo agora</string>
+    <string name="w_hasta">ata as %1$s</string>
+    <string name="w_durante">durante as próximas %1$d h</string>
+    <string name="w_sin_lluvia">Sen chuvia</string>
+    <string name="w_proximas">nas próximas %1$d h</string>
+    <string name="w_lluvia_a">Chuvia ás %1$s</string>
+    <string name="w_empieza_en">Comeza en %1$s</string>
+    <string name="w_total_horas">%1$d h: %2$s mm</string>
+    <string name="w_quedan_luz">Quedan %1$s de luz</string>
+    <string name="w_falta_amanecer">Faltan %1$s para o amencer</string>
+    <string name="w_fase_0">Lúa nova</string>
+    <string name="w_fase_1">Lúa crecente</string>
+    <string name="w_fase_2">Coarto crecente</string>
+    <string name="w_fase_3">Xibosa crecente</string>
+    <string name="w_fase_4">Lúa chea</string>
+    <string name="w_fase_5">Xibosa minguante</string>
+    <string name="w_fase_6">Coarto minguante</string>
+    <string name="w_fase_7">Lúa minguante</string>
+    <string name="w_ilum">%1$d%% iluminada</string>
+    <string name="w_llena_en">Lúa chea en %1$d d</string>
+    <string name="w_nueva_en">Lúa nova en %1$d d</string>
+    <string name="w_nombre_mareas">QuickTemp · Mareas</string>
+    <string name="w_nombre_lluvia">QuickTemp · Chuvia</string>
+    <string name="w_nombre_sol">QuickTemp · Sol e lúa</string>
+    <string name="w_desc_mareas">Próxima preamar e baixamar, curva da marea e coeficiente</string>
+    <string name="w_desc_lluvia">Chuvirá? As próximas 12 horas de chuvia dunha ollada</string>
+    <string name="w_desc_sol">Luz que queda, amencer, solpor e fase da lúa</string>
+</resources>
